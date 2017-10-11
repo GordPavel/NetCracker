@@ -53,7 +53,7 @@ class DwellingFloorTest{
 
     @Test
     void getSpaces(){
-        assertArrayEq();
+        assertSpacesEquals();
     }
 
     @Test
@@ -71,7 +71,7 @@ class DwellingFloorTest{
         dwellingFloor.setSpace( index , newSpace );
         spaces.set( index , newSpace );
 
-        assertArrayEq();
+        assertSpacesEquals();
     }
 
     @Test
@@ -82,12 +82,12 @@ class DwellingFloorTest{
         dwellingFloor.addSpace( index , newSpace );
         spaces.add( index , newSpace );
 
-        assertArrayEq();
+        assertSpacesEquals();
 
         dwellingFloor.addSpace( dwellingFloor.getSpacesCount() , newSpace );
         spaces.add( newSpace );
 
-        assertArrayEq();
+        assertSpacesEquals();
     }
 
     @Test
@@ -97,10 +97,10 @@ class DwellingFloorTest{
         dwellingFloor.removeSpace( index );
         spaces.remove( index );
 
-        assertArrayEq();
+        assertSpacesEquals();
     }
 
-    private void assertArrayEq(){
+    private void assertSpacesEquals(){
         assertArrayEquals( spaces.toArray( new Space[ 0 ] ) , dwellingFloor.getSpaces() );
     }
 

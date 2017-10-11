@@ -1,5 +1,6 @@
 package dwelling;
 
+import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
 import interfaces.Floor;
 import interfaces.Space;
@@ -40,14 +41,20 @@ public class DwellingFloor implements Floor{
 
     @Override
     public Space getSpace( int index ){
-        checkSpacesRange( index );
-        return flats[ index ];
+        try{
+            return flats[ index ];
+        }catch( IndexOutOfBoundsException e ){
+            throw new FloorIndexOutOfBoundsException();
+        }
     }
 
     @Override
     public void setSpace( int index , Space space ){
-        checkSpacesRange( index );
-        this.flats[ index ] = space;
+        try{
+            this.flats[ index ] = space;
+        }catch( IndexOutOfBoundsException e ){
+            throw new FloorIndexOutOfBoundsException();
+        }
     }
 
     @Override
