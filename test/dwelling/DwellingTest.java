@@ -90,9 +90,8 @@ class DwellingTest{
     @Test
     void getSpace(){
         int i = 0;
-        for( Floor floor : floors ){
+        for( Floor floor : floors )
             for( Space space : floor.getSpaces() ){ assertEquals( space , dwelling.getSpace( i++ ) ); }
-        }
         assertThrows( SpaceIndexOutOfBoundsException.class , () -> dwelling.getSpace( spacesCount ) );
     }
 

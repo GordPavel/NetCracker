@@ -18,8 +18,7 @@ public class Dwelling implements Building{
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( DwellingFloor::new )
-                            .toArray( value -> new Floor[ floors ] );
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( DwellingFloor::new ).toArray( value -> new Floor[ floors ] );
     }
 
     public Dwelling( Floor[] floors ){
@@ -126,4 +125,30 @@ public class Dwelling implements Building{
         for( Floor floor : floors ){ spaces.addAll( Arrays.asList( floor.getSpaces() ) ); }
         return spaces.toArray( new Space[ getSpacesCount() ] );
     }
+
+    @Override
+    public int hashCode(){
+        return Arrays.hashCode( floors );
+    }
+
+    @Override
+    public boolean equals( Object obj ){
+        if( !( obj instanceof Dwelling ) ){ return false; }
+        Dwelling dwelling = ( Dwelling ) obj;
+        return Arrays.equals( this.floors , dwelling.floors );
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder floors      = new StringBuilder();
+        int           floorNumber = 0, spaceNumber = 0;
+        for( Floor floor : this.floors ){
+            floors.append( "Floor " ).append( floorNumber++ );
+            for( Space space : floor.getSpaces() ){
+                floors.append( "Space " ).append( space ).append( " number " ).append( spaceNumber++ );
+            }
+        }
+        return floors.toString();
+    }
 }
+

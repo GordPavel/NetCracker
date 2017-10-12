@@ -91,8 +91,7 @@ public class DwellingFloor implements Floor{
 
     @Override
     public int hashCode(){
-        return Arrays.stream( flats ).mapToInt( Object::hashCode ).reduce( ( left , right ) -> ( 31 + left ) ^ right )
-                     .orElseThrow( () -> new IllegalStateException( "One of all spaces has problems with hashCode" ) );
+        return Arrays.hashCode( flats );
     }
 
 

@@ -23,10 +23,18 @@ public class Flat implements Space{
     }
 
     public Flat( Integer area , Integer rooms ){
-        if( area <= 0 ){ throw new InvalidSpaceAreaException(); }
-        if( rooms <= 0 ){ throw new InvalidRoomsCountException(); }
+        checkArea( area );
+        checkRooms( rooms );
         this.area = area;
         this.rooms = rooms;
+    }
+
+    private void checkRooms( Integer rooms ){
+        if( rooms <= 0 ){ throw new InvalidRoomsCountException(); }
+    }
+
+    private void checkArea( Integer area ){
+        if( area <= 0 ){ throw new InvalidSpaceAreaException(); }
     }
 
     @Override
@@ -35,8 +43,9 @@ public class Flat implements Space{
     }
 
     @Override
-    public void setRoomsCount( Integer roomsCount ){
-        this.rooms = roomsCount;
+    public void setRoomsCount( Integer rooms ){
+        checkRooms( rooms );
+        this.rooms = rooms;
     }
 
     @Override
@@ -46,6 +55,7 @@ public class Flat implements Space{
 
     @Override
     public void setArea( Integer area ){
+        checkArea( area );
         this.area = area;
     }
 
