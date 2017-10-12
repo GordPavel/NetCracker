@@ -4,9 +4,10 @@ import exceptions.InvalidRoomsCountException;
 import exceptions.InvalidSpaceAreaException;
 import interfaces.Space;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Office implements Space{
+public class Office implements Space, Serializable{
 
     private static final Integer DEFAULT_AREA  = 250;
     private static final Integer DEFAULT_ROOMS = 1;
@@ -66,9 +67,9 @@ public class Office implements Space{
 
     @Override
     public boolean equals( Object obj ){
-        if( !( obj instanceof Office ) ){ return false; }
-        Office office = ( Office ) obj;
-        return Objects.equals( this.area , office.area ) && Objects.equals( this.rooms , office.rooms );
+        if( !( obj instanceof Space ) ){ return false; }
+        Space office = ( Space ) obj;
+        return Objects.equals( this.area , office.getArea() ) && Objects.equals( this.rooms , office.getArea() );
     }
 
     @Override

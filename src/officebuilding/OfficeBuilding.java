@@ -7,6 +7,7 @@ import interfaces.Building;
 import interfaces.Floor;
 import interfaces.Space;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -14,7 +15,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class OfficeBuilding implements Building{
+public class OfficeBuilding implements Building, Serializable{
 
     private List<Floor> floors;
 
@@ -151,5 +152,20 @@ public class OfficeBuilding implements Building{
         List<Space> spaces = new ArrayList<>();
         for( Floor floor : floors ){ spaces.addAll( Arrays.asList( floor.getSpaces() ) ); }
         return spaces.toArray( new Space[ getSpacesCount() ] );
+    }
+
+    @Override
+    public boolean equals( Object o ){
+        if( this == o ){ return true; }
+        if( !( o instanceof Building ) ){ return false; }
+
+        Building that = ( Building ) o;
+
+        return Arrays.equals( getFloors() , that.getFloors() );
+    }
+
+    @Override
+    public int hashCode(){
+        return Arrays.hashCode( getFloors() );
     }
 }

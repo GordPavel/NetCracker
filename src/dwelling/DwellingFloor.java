@@ -5,10 +5,11 @@ import exceptions.SpaceIndexOutOfBoundsException;
 import interfaces.Floor;
 import interfaces.Space;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class DwellingFloor implements Floor{
+public class DwellingFloor implements Floor, Serializable{
     private Space[] flats;
 
     public DwellingFloor( Integer flatsCount ){
@@ -97,16 +98,8 @@ public class DwellingFloor implements Floor{
 
     @Override
     public boolean equals( Object obj ){
-        if( !( obj instanceof DwellingFloor ) ){ return false; }
-        DwellingFloor dwellingFloor = ( DwellingFloor ) obj;
-        return Arrays.equals( this.flats , dwellingFloor.flats );
-    }
-
-    @Override
-    public String toString(){
-        return Arrays.stream( flats ).map( space -> new StringBuilder( space.toString() ) )
-                     .reduce( new StringBuilder( ( "dwellingFloor" ) ) ,
-                              ( stringBuilder , stringBuilder2 ) -> stringBuilder.append( "\n" )
-                                                                                 .append( stringBuilder2 ) ).toString();
+        if( !( obj instanceof Floor ) ){ return false; }
+        Floor dwellingFloor = ( Floor ) obj;
+        return Arrays.equals( this.flats , dwellingFloor.getSpaces() );
     }
 }

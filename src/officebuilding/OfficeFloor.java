@@ -4,11 +4,13 @@ import collections.OneSideLinkedCycleList;
 import interfaces.Floor;
 import interfaces.Space;
 
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class OfficeFloor implements Floor{
+public class OfficeFloor implements Floor, Serializable{
     private List<Space> offices;
 
     public OfficeFloor( int officesCount ){
@@ -71,5 +73,18 @@ public class OfficeFloor implements Floor{
     public Space getBestSpace(){
         return offices.stream().max( Comparator.comparingInt( Space::getArea ) )
                       .orElseThrow( IllegalStateException::new );
+    }
+
+    @Override
+    public boolean equals( Object o ){
+        if( this == o ){ return true; }
+        if( !( o instanceof Floor ) ){ return false; }
+        Floor that = ( Floor ) o;
+        return Arrays.equals( this.offices.toArray() , that.getSpaces() );
+    }
+
+    @Override
+    public int hashCode(){
+        return offices.hashCode();
     }
 }

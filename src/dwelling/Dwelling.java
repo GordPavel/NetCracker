@@ -6,12 +6,13 @@ import interfaces.Building;
 import interfaces.Floor;
 import interfaces.Space;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class Dwelling implements Building{
+public class Dwelling implements Building, Serializable{
     private Floor[] floors;
 
     public Dwelling( int floors , int... spacesCountOnEachFloor ){
@@ -133,22 +134,9 @@ public class Dwelling implements Building{
 
     @Override
     public boolean equals( Object obj ){
-        if( !( obj instanceof Dwelling ) ){ return false; }
-        Dwelling dwelling = ( Dwelling ) obj;
-        return Arrays.equals( this.floors , dwelling.floors );
-    }
-
-    @Override
-    public String toString(){
-        StringBuilder floors      = new StringBuilder();
-        int           floorNumber = 0, spaceNumber = 0;
-        for( Floor floor : this.floors ){
-            floors.append( "Floor " ).append( floorNumber++ );
-            for( Space space : floor.getSpaces() ){
-                floors.append( "Space " ).append( space ).append( " number " ).append( spaceNumber++ );
-            }
-        }
-        return floors.toString();
+        if( !( obj instanceof Building ) ){ return false; }
+        Building dwelling = ( Building ) obj;
+        return Arrays.equals( this.floors , dwelling.getFloors() );
     }
 }
 

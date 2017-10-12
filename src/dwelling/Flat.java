@@ -4,9 +4,10 @@ import exceptions.InvalidRoomsCountException;
 import exceptions.InvalidSpaceAreaException;
 import interfaces.Space;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Flat implements Space{
+public class Flat implements Space, Serializable{
 
     private static final Integer DEFAULT_SPACE = 50;
     private static final Integer DEFAULT_ROOMS = 2;
@@ -66,9 +67,9 @@ public class Flat implements Space{
 
     @Override
     public boolean equals( Object obj ){
-        if( !( obj instanceof Flat ) ){ return false; }
-        Flat flat = ( Flat ) obj;
-        return Objects.equals( this.area , flat.area ) && Objects.equals( this.rooms , flat.rooms );
+        if( !( obj instanceof Space ) ){ return false; }
+        Space flat = ( Space ) obj;
+        return Objects.equals( this.area , flat.getArea() ) && Objects.equals( this.rooms , flat.getRoomsCount() );
     }
 
     @Override

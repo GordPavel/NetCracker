@@ -36,11 +36,9 @@ class OfficeBuildingTest{
     }
 
     private List<Space> getOffices(){
-        int flatsCount = random.nextInt( 10 ) + 5;
         return Stream.generate( () -> new Office( random.nextInt( 50 ) + 25 , random.nextInt( 5 ) + 3 ) )
-                     .limit( flatsCount ).collect( Collectors.toList() );
+                     .limit( random.nextInt( 10 ) + 5 ).collect( Collectors.toList() );
     }
-
 
     @Test
     void getFloorsCount(){
