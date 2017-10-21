@@ -1,29 +1,28 @@
-package dwelling;
+package buildings.dwelling;
 
+import buildings.interfaces.Space;
 import exceptions.InvalidRoomsCountException;
 import exceptions.InvalidSpaceAreaException;
-import interfaces.Space;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Flat implements Space, Serializable{
+public class Flat implements Space{
 
-    private static final Integer DEFAULT_SPACE = 50;
+    private static final Double  DEFAULT_SPACE = 50.0;
     private static final Integer DEFAULT_ROOMS = 2;
 
-    private Integer area;
+    private Double  area;
     private Integer rooms;
 
     public Flat(){
         this( DEFAULT_SPACE , DEFAULT_ROOMS );
     }
 
-    public Flat( Integer area ){
+    public Flat( Double area ){
         this( area , DEFAULT_ROOMS );
     }
 
-    public Flat( Integer area , Integer rooms ){
+    public Flat( Double area , Integer rooms ){
         checkArea( area );
         checkRooms( rooms );
         this.area = area;
@@ -34,7 +33,7 @@ public class Flat implements Space, Serializable{
         if( rooms <= 0 ){ throw new InvalidRoomsCountException(); }
     }
 
-    private void checkArea( Integer area ){
+    private void checkArea( Double area ){
         if( area <= 0 ){ throw new InvalidSpaceAreaException(); }
     }
 
@@ -50,23 +49,24 @@ public class Flat implements Space, Serializable{
     }
 
     @Override
-    public Integer getArea(){
+    public Double getArea(){
         return area;
     }
 
     @Override
-    public void setArea( Integer area ){
+    public void setArea( Double area ){
         checkArea( area );
         this.area = area;
     }
 
     @Override
     public int hashCode(){
-        return ( 31 + area ) ^ rooms;
+        return this.toString().hashCode();
     }
 
     @Override
     public boolean equals( Object obj ){
+        if( this == obj ){ return true; }
         if( !( obj instanceof Space ) ){ return false; }
         Space flat = ( Space ) obj;
         return Objects.equals( this.area , flat.getArea() ) && Objects.equals( this.rooms , flat.getRoomsCount() );
@@ -74,6 +74,17 @@ public class Flat implements Space, Serializable{
 
     @Override
     public String toString(){
-        return String.format( "area = %d, rooms count = %d." , area , rooms );
+        return String.format( "Flat (%d , %f)" , getRoomsCount() , getArea() );
+    }
+
+    @Override
+    public Object clone(){
+        Flat clone = null;
+        try{
+            clone = ( Flat ) super.clone();
+            clone.area = area;
+            clone.rooms = rooms;
+        }catch( CloneNotSupportedException ignored ){}
+        return clone;
     }
 }

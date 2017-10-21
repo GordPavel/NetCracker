@@ -1,58 +1,27 @@
-package officebuilding;
+package buildings.officebuilding;
 
+import buildings.interfaces.Building;
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import collections.TwoSideLinkedCycleList;
 import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
-import interfaces.Building;
-import interfaces.Floor;
-import interfaces.Space;
 
-import java.io.Serializable;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 
-public class OfficeBuilding implements Building, Serializable{
+public class OfficeBuilding implements Building{
 
-    private List<Floor> floors;
+    private TwoSideLinkedCycleList<Floor> floors;
 
     public OfficeBuilding( int floors , int... spacesCountOnEachFloor ){
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( OfficeFloor::new )
-                            .collect( new Collector<OfficeFloor, TwoSideLinkedCycleList<Floor>, List<Floor>>(){
-                                @Override
-                                public Supplier<TwoSideLinkedCycleList<Floor>> supplier(){
-                                    return () -> new TwoSideLinkedCycleList<>( Collections.emptyList() );
-                                }
-
-                                @Override
-                                public BiConsumer<TwoSideLinkedCycleList<Floor>, OfficeFloor> accumulator(){
-                                    return TwoSideLinkedCycleList::add;
-                                }
-
-                                @Override
-                                public BinaryOperator<TwoSideLinkedCycleList<Floor>> combiner(){
-                                    return ( floors1 , floors2 ) -> {
-                                        for( Floor floor : floors2 ){ floors1.add( floor ); }
-                                        return floors1;
-                                    };
-                                }
-
-                                @Override
-                                public Function<TwoSideLinkedCycleList<Floor>, List<Floor>> finisher(){
-                                    return floors12 -> floors12;
-                                }
-
-                                @Override
-                                public Set<Characteristics> characteristics(){
-                                    return Collections.singleton( Characteristics.IDENTITY_FINISH );
-                                }
-                            } );
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( officebuilding.OfficeFloor::new )
+                            .collect( () -> new TwoSideLinkedCycleList<>( Collections.emptyList() ) ,
+                                      TwoSideLinkedCycleList::add , ( floors12 , floors2 ) -> {
+                                        for( Floor floor : floors2 ){ floors12.add( floor ); }
+                                    } );
     }
 
     public OfficeBuilding( List<Floor> floors ){
@@ -70,8 +39,8 @@ public class OfficeBuilding implements Building, Serializable{
     }
 
     @Override
-    public Integer getSpacesArea(){
-        return floors.stream().mapToInt( Floor::getSpacesArea ).sum();
+    public Double getSpacesArea(){
+        return floors.stream().mapToDouble( Floor::getSpacesArea ).sum();
     }
 
     @Override
@@ -138,13 +107,13 @@ public class OfficeBuilding implements Building, Serializable{
 
     @Override
     public Space getBestSpace(){
-        return Arrays.stream( getSpaces() ).max( Comparator.comparingInt( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).max( Comparator.comparingDouble( Space::getArea ) )
                      .orElseThrow( () -> new IllegalStateException( "Dwelling is empty" ) );
     }
 
     @Override
     public Space[] getBestSpaces(){
-        return Arrays.stream( getSpaces() ).sorted( Comparator.comparingInt( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).sorted( Comparator.comparingDouble( Space::getArea ) )
                      .toArray( value -> new Space[ getSpacesCount() ] );
     }
 
@@ -158,14 +127,28 @@ public class OfficeBuilding implements Building, Serializable{
     public boolean equals( Object o ){
         if( this == o ){ return true; }
         if( !( o instanceof Building ) ){ return false; }
-
         Building that = ( Building ) o;
-
         return Arrays.equals( getFloors() , that.getFloors() );
     }
 
     @Override
     public int hashCode(){
         return Arrays.hashCode( getFloors() );
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException{
+        OfficeBuilding clone = ( OfficeBuilding ) super.clone();
+        clone.floors = ( TwoSideLinkedCycleList<Floor> ) this.floors.clone();
+        return clone;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "OfficeBuilding (" ).append( getFloorsCount() ).append( ", " );
+        for( Floor floor : getFloors() ){ stringBuilder.append( floor ).append( ", " ); }
+        stringBuilder.append( ")" );
+        return stringBuilder.toString();
     }
 }

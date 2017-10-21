@@ -1,9 +1,11 @@
-package interfaces;
+package buildings.interfaces;
 
-public interface Floor{
+import java.io.Serializable;
+
+public interface Floor extends Serializable, Cloneable{
     Integer getSpacesCount();
 
-    Integer getSpacesArea();
+    Double getSpacesArea();
 
     Integer getSpacesRooms();
 
@@ -18,4 +20,12 @@ public interface Floor{
     void removeSpace( int index );
 
     Space getBestSpace();
+
+    Object clone() throws CloneNotSupportedException;
+
+    String toString();
+
+    int hashCode();
+
+    boolean equals( Object object );
 }

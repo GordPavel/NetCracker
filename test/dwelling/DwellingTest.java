@@ -1,10 +1,10 @@
 package dwelling;
 
+import buildings.interfaces.Building;
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
-import interfaces.Building;
-import interfaces.Floor;
-import interfaces.Space;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class DwellingTest{
     private Building    dwelling;
     private Integer     floorsCount;
     private Integer     spacesCount;
-    private Integer     spacesArea;
+    private Double      spacesArea;
     private Integer     spacesRooms;
     private List<Floor> floors;
     private Random random = new Random( System.currentTimeMillis() );
@@ -31,14 +31,14 @@ class DwellingTest{
         floors = Stream.generate( () -> new DwellingFloor( getFlats() ) ).limit( floorsCount )
                        .collect( Collectors.toList() );
         spacesCount = floors.stream().mapToInt( Floor::getSpacesCount ).sum();
-        spacesArea = floors.stream().mapToInt( Floor::getSpacesArea ).sum();
+        spacesArea = floors.stream().mapToDouble( Floor::getSpacesArea ).sum();
         spacesRooms = floors.stream().mapToInt( Floor::getSpacesRooms ).sum();
         dwelling = new Dwelling( floors.toArray( new Floor[ floorsCount ] ) );
     }
 
     private Space[] getFlats(){
         int flatsCount = random.nextInt( 10 ) + 5;
-        return Stream.generate( () -> new Flat( random.nextInt( 50 ) + 25 , random.nextInt( 5 ) + 3 ) )
+        return Stream.generate( () -> new Flat( random.nextDouble() * 50 + 25 , random.nextInt( 5 ) + 3 ) )
                      .limit( flatsCount ).toArray( value -> new Space[ flatsCount ] );
     }
 
@@ -90,8 +90,9 @@ class DwellingTest{
     @Test
     void getSpace(){
         int i = 0;
-        for( Floor floor : floors )
+        for( Floor floor : floors ){
             for( Space space : floor.getSpaces() ){ assertEquals( space , dwelling.getSpace( i++ ) ); }
+        }
         assertThrows( SpaceIndexOutOfBoundsException.class , () -> dwelling.getSpace( spacesCount ) );
     }
 
@@ -139,14 +140,14 @@ class DwellingTest{
 
     @Test
     void getBestSpace(){
-        assertEquals( getAllSpacesFromFloors().stream().max( Comparator.comparingInt( Space::getArea ) )
+        assertEquals( getAllSpacesFromFloors().stream().max( Comparator.comparingDouble( Space::getArea ) )
                                               .orElseThrow( IllegalStateException::new ) , dwelling.getBestSpace() );
     }
 
     @Test
     void getBestSpaces(){
         assertArrayEquals(
-                getAllSpacesFromFloors().stream().sorted( Comparator.comparingInt( Space::getArea ) ).toArray() ,
+                getAllSpacesFromFloors().stream().sorted( Comparator.comparingDouble( Space::getArea ) ).toArray() ,
                 dwelling.getBestSpaces() );
     }
 

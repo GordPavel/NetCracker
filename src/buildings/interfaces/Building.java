@@ -1,11 +1,13 @@
-package interfaces;
+package buildings.interfaces;
 
-public interface Building{
+import java.io.Serializable;
+
+public interface Building extends Serializable, Cloneable{
     Integer getFloorsCount();
 
     Integer getSpacesCount();
 
-    Integer getSpacesArea();
+    Double getSpacesArea();
 
     Integer getSpacesRooms();
 
@@ -26,4 +28,12 @@ public interface Building{
     Space getBestSpace();
 
     Space[] getBestSpaces();
+
+    Object clone() throws CloneNotSupportedException;
+
+    String toString();
+
+    int hashCode();
+
+    boolean equals( Object object );
 }

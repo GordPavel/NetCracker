@@ -1,11 +1,11 @@
 package util;
 
-import dwelling.Dwelling;
-import dwelling.DwellingFloor;
-import dwelling.Flat;
-import interfaces.Building;
-import interfaces.Floor;
-import interfaces.Space;
+import buildings.dwelling.Dwelling;
+import buildings.dwelling.DwellingFloor;
+import buildings.dwelling.Flat;
+import buildings.interfaces.Building;
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 
 import java.io.*;
 import java.util.Scanner;
@@ -19,7 +19,7 @@ public final class Buildings{
             dataOutputStream.writeInt( floor.getSpacesCount() );
             for( Space space : floor.getSpaces() ){
                 dataOutputStream.writeInt( space.getRoomsCount() );
-                dataOutputStream.writeInt( space.getArea() );
+                dataOutputStream.writeDouble( space.getArea() );
             }
         }
         dataOutputStream.flush();
@@ -29,12 +29,13 @@ public final class Buildings{
         DataInputStream dataInputStream = new DataInputStream( inputStream );
         Floor[]         floors          = new Floor[ dataInputStream.readInt() ];
         Space[]         spaces;
-        int             rooms, area;
+        int             rooms;
+        double          area;
         for( int i = 0 ; i < floors.length ; i++ ){
             spaces = new Flat[ dataInputStream.readInt() ];
             for( int j = 0 ; j < spaces.length ; j++ ){
                 rooms = dataInputStream.readInt();
-                area = dataInputStream.readInt();
+                area = dataInputStream.readDouble();
                 spaces[ j ] = new Flat( area , rooms );
             }
             floors[ i ] = new DwellingFloor( spaces );
@@ -59,7 +60,8 @@ public final class Buildings{
         tokenizer.nextToken();
         Floor[] floors = new Floor[ ( int ) tokenizer.nval ];
         Space[] spaces;
-        int     rooms, area;
+        int     rooms;
+        double  area;
         for( int i = 0 ; i < floors.length ; i++ ){
             tokenizer.nextToken();
             spaces = new Space[ ( int ) tokenizer.nval ];
@@ -67,7 +69,7 @@ public final class Buildings{
                 tokenizer.nextToken();
                 rooms = ( int ) tokenizer.nval;
                 tokenizer.nextToken();
-                area = ( int ) tokenizer.nval;
+                area = tokenizer.nval;
                 spaces[ j ] = new Flat( area , rooms );
             }
             floors[ i ] = new DwellingFloor( spaces );
@@ -92,12 +94,13 @@ public final class Buildings{
     public static Building readBuilding( Scanner scanner ) throws IOException{
         Floor[] floors = new Floor[ scanner.nextInt() ];
         Space[] spaces;
-        int     rooms, area;
+        int     rooms;
+        double  area;
         for( int i = 0 ; i < floors.length ; i++ ){
             spaces = new Space[ scanner.nextInt() ];
             for( int j = 0 ; j < spaces.length ; j++ ){
                 rooms = scanner.nextInt();
-                area = scanner.nextInt();
+                area = scanner.nextDouble();
                 spaces[ j ] = new Flat( area , rooms );
             }
             floors[ i ] = new DwellingFloor( spaces );

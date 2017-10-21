@@ -1,17 +1,16 @@
-package officebuilding;
+package buildings.officebuilding;
 
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import collections.OneSideLinkedCycleList;
-import interfaces.Floor;
-import interfaces.Space;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class OfficeFloor implements Floor, Serializable{
-    private List<Space> offices;
+public class OfficeFloor implements Floor{
+    private OneSideLinkedCycleList<Space> offices;
 
     public OfficeFloor( int officesCount ){
         this.offices = new OneSideLinkedCycleList<>( Collections.nCopies( officesCount , new Office() ) );
@@ -27,8 +26,8 @@ public class OfficeFloor implements Floor, Serializable{
     }
 
     @Override
-    public Integer getSpacesArea(){
-        return offices.stream().mapToInt( Space::getArea ).sum();
+    public Double getSpacesArea(){
+        return offices.stream().mapToDouble( Space::getArea ).sum();
     }
 
     @Override
@@ -71,8 +70,13 @@ public class OfficeFloor implements Floor, Serializable{
 
     @Override
     public Space getBestSpace(){
-        return offices.stream().max( Comparator.comparingInt( Space::getArea ) )
+        return offices.stream().max( Comparator.comparingDouble( Space::getArea ) )
                       .orElseThrow( IllegalStateException::new );
+    }
+
+    @Override
+    public int hashCode(){
+        return offices.hashCode();
     }
 
     @Override
@@ -84,7 +88,20 @@ public class OfficeFloor implements Floor, Serializable{
     }
 
     @Override
-    public int hashCode(){
-        return offices.hashCode();
+    public Object clone() throws CloneNotSupportedException{
+        OfficeFloor clone = ( OfficeFloor ) super.clone();
+        clone.offices = ( OneSideLinkedCycleList<Space> ) offices.clone();
+        return clone;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "OfficeFloor (" ).append( getSpacesCount() ).append( ", " );
+        for( Space space : getSpaces() ){
+            stringBuilder.append( space ).append( ", " );
+        }
+        stringBuilder.append( ")" );
+        return stringBuilder.toString();
     }
 }

@@ -1,10 +1,10 @@
 package util;
 
+import buildings.interfaces.Building;
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import exceptions.InexchangeableFloorsException;
 import exceptions.InexchangeableSpacesException;
-import interfaces.Building;
-import interfaces.Floor;
-import interfaces.Space;
 
 import java.util.Objects;
 

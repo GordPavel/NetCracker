@@ -1,15 +1,14 @@
-package dwelling;
+package buildings.dwelling;
 
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
-import interfaces.Floor;
-import interfaces.Space;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-public class DwellingFloor implements Floor, Serializable{
+public class DwellingFloor implements Floor{
     private Space[] flats;
 
     public DwellingFloor( Integer flatsCount ){
@@ -26,8 +25,8 @@ public class DwellingFloor implements Floor, Serializable{
     }
 
     @Override
-    public Integer getSpacesArea(){
-        return Arrays.stream( flats ).mapToInt( Space::getArea ).sum();
+    public Double getSpacesArea(){
+        return Arrays.stream( flats ).mapToDouble( Space::getArea ).sum();
     }
 
     @Override
@@ -85,7 +84,7 @@ public class DwellingFloor implements Floor, Serializable{
 
     @Override
     public Space getBestSpace(){
-        Space best = new Flat( 1 );
+        Space best = new Flat( 1.0 );
         for( Space space : flats ){ if( space.getArea() > best.getArea() ){ best = space; } }
         return best;
     }
@@ -95,11 +94,32 @@ public class DwellingFloor implements Floor, Serializable{
         return Arrays.hashCode( flats );
     }
 
+    @Override
+    public boolean equals( Object o ){
+        if( this == o ){ return true; }
+        if( !( o instanceof Floor ) ){ return false; }
+        Floor that = ( Floor ) o;
+        return Arrays.equals( flats , that.getSpaces() );
+    }
 
     @Override
-    public boolean equals( Object obj ){
-        if( !( obj instanceof Floor ) ){ return false; }
-        Floor dwellingFloor = ( Floor ) obj;
-        return Arrays.equals( this.flats , dwellingFloor.getSpaces() );
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "DwellingFloor (" ).append( getSpacesCount() ).append( ", " );
+        for( Space space : getSpaces() ){
+            stringBuilder.append( space ).append( ", " );
+        }
+        stringBuilder.append( ")" );
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public Object clone(){
+        DwellingFloor floor = null;
+        try{
+            floor = ( DwellingFloor ) super.clone();
+            floor.flats = flats.clone();
+        }catch( CloneNotSupportedException ignored ){}
+        return floor;
     }
 }

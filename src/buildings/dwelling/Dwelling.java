@@ -1,25 +1,25 @@
-package dwelling;
+package buildings.dwelling;
 
+import buildings.interfaces.Building;
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
-import interfaces.Building;
-import interfaces.Floor;
-import interfaces.Space;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-public class Dwelling implements Building, Serializable{
+public class Dwelling implements Building{
     private Floor[] floors;
 
     public Dwelling( int floors , int... spacesCountOnEachFloor ){
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( DwellingFloor::new ).toArray( value -> new Floor[ floors ] );
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( dwelling.DwellingFloor::new )
+                            .toArray( value -> new Floor[ floors ] );
     }
 
     public Dwelling( Floor[] floors ){
@@ -38,8 +38,8 @@ public class Dwelling implements Building, Serializable{
     }
 
     @Override
-    public Integer getSpacesArea(){
-        return Arrays.stream( floors ).mapToInt( Floor::getSpacesArea ).sum();
+    public Double getSpacesArea(){
+        return Arrays.stream( floors ).mapToDouble( Floor::getSpacesArea ).sum();
     }
 
     @Override
@@ -111,13 +111,13 @@ public class Dwelling implements Building, Serializable{
 
     @Override
     public Space getBestSpace(){
-        return Arrays.stream( getSpaces() ).max( Comparator.comparingInt( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).max( Comparator.comparingDouble( Space::getArea ) )
                      .orElseThrow( () -> new IllegalStateException( "Dwelling is empty" ) );
     }
 
     @Override
     public Space[] getBestSpaces(){
-        return Arrays.stream( getSpaces() ).sorted( Comparator.comparingInt( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).sorted( Comparator.comparingDouble( Space::getArea ) )
                      .toArray( value -> new Space[ getSpacesCount() ] );
     }
 
@@ -134,9 +134,27 @@ public class Dwelling implements Building, Serializable{
 
     @Override
     public boolean equals( Object obj ){
+        if( this == obj ){ return true; }
         if( !( obj instanceof Building ) ){ return false; }
         Building dwelling = ( Building ) obj;
         return Arrays.equals( this.floors , dwelling.getFloors() );
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException{
+        Dwelling clone = ( Dwelling ) super.clone();
+        clone.floors = Arrays.copyOf( this.floors , floors.length );
+        return clone;
+    }
+
+    @Override
+    public String toString(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append( "Dwelling (" ).append( getFloorsCount() ).append( ", " );
+        for( Floor floor : getFloors() ){ stringBuilder.append( floor ).append( ", " ); }
+        stringBuilder.append( ")" );
+        return stringBuilder.toString();
+
     }
 }
 

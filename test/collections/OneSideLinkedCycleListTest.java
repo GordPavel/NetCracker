@@ -17,8 +17,7 @@ class OneSideLinkedCycleListTest{
 
     @BeforeEach
     void setUp(){
-        int limit = 6;
-//                random.nextInt( 20 ) + 10;
+        int limit = 10;
         integers =
                 IntStream.generate( () -> random.nextInt( 50 ) ).limit( limit ).boxed().collect( Collectors.toList() );
         cycleList = new OneSideLinkedCycleList<>( integers );
@@ -81,7 +80,7 @@ class OneSideLinkedCycleListTest{
 
     @Test
     void remove(){
-        int index = random.nextInt( integers.size() + 1 );
+        int index = random.nextInt( integers.size() );
         integers.remove( index );
         cycleList.remove( index );
         assertArrayEquals( integers.toArray() , cycleList.toArray() );
@@ -102,5 +101,12 @@ class OneSideLinkedCycleListTest{
     @Test
     void stream(){
         assertEquals( integers.stream().mapToInt( o -> o ).sum() , cycleList.stream().mapToInt( o -> o ).sum() );
+    }
+
+    @Test
+    void cloneTest() throws CloneNotSupportedException{
+        List<Integer> clone = ( List<Integer> ) cycleList.clone();
+        clone.set( 0 , 5 );
+        assertFalse( cycleList.equals( clone ) );
     }
 }

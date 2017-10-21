@@ -1,10 +1,10 @@
 package officebuilding;
 
+import buildings.interfaces.Building;
+import buildings.interfaces.Floor;
+import buildings.interfaces.Space;
 import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
-import interfaces.Building;
-import interfaces.Floor;
-import interfaces.Space;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class OfficeBuildingTest{
     private List<Floor> floors;
     private Integer     floorsCount;
     private Integer     spacesCount;
-    private Integer     spacesArea;
+    private Double      spacesArea;
     private Integer     spacesRooms;
     private Random random = new Random( System.currentTimeMillis() );
 
@@ -30,13 +30,13 @@ class OfficeBuildingTest{
         floors = Stream.generate( () -> new OfficeFloor( getOffices() ) ).limit( floorsCount )
                        .collect( Collectors.toList() );
         spacesCount = floors.stream().mapToInt( Floor::getSpacesCount ).sum();
-        spacesArea = floors.stream().mapToInt( Floor::getSpacesArea ).sum();
+        spacesArea = floors.stream().mapToDouble( Floor::getSpacesArea ).sum();
         spacesRooms = floors.stream().mapToInt( Floor::getSpacesRooms ).sum();
         officeBuilding = new OfficeBuilding( floors );
     }
 
     private List<Space> getOffices(){
-        return Stream.generate( () -> new Office( random.nextInt( 50 ) + 25 , random.nextInt( 5 ) + 3 ) )
+        return Stream.generate( () -> new Office( random.nextDouble() * 50 + 25 , random.nextInt( 5 ) + 3 ) )
                      .limit( random.nextInt( 10 ) + 5 ).collect( Collectors.toList() );
     }
 
@@ -140,7 +140,7 @@ class OfficeBuildingTest{
 
     @Test
     void getBestSpace(){
-        assertEquals( getAllSpacesFromFloors().stream().max( Comparator.comparingInt( Space::getArea ) )
+        assertEquals( getAllSpacesFromFloors().stream().max( Comparator.comparingDouble( Space::getArea ) )
                                               .orElseThrow( IllegalStateException::new ) ,
                       officeBuilding.getBestSpace() );
     }
@@ -148,7 +148,7 @@ class OfficeBuildingTest{
     @Test
     void getBestSpaces(){
         assertArrayEquals(
-                getAllSpacesFromFloors().stream().sorted( Comparator.comparingInt( Space::getArea ) ).toArray() ,
+                getAllSpacesFromFloors().stream().sorted( Comparator.comparingDouble( Space::getArea ) ).toArray() ,
                 officeBuilding.getBestSpaces() );
     }
 }
