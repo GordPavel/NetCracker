@@ -1,45 +1,38 @@
 package buildings.threads;
 
 import buildings.interfaces.Floor;
-import buildings.interfaces.Space;
 
-import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.function.Consumer;
 
 public class SequentialCleaner implements Runnable{
-    private Semaphore      repairingSemaphore;
-    private Semaphore      cleaningSemaphore;
-    private Floor          floor;
+    private Semaphore      semaphore;
     private CountDownLatch starter;
+    private Floor          floor;
+    private static Integer goingSpaceIndex = 0;
 
-    public SequentialCleaner( Semaphore repairingSemaphore , Semaphore cleaningSemaphore , Floor floor ,
-                              CountDownLatch starter ){
-        this.repairingSemaphore = repairingSemaphore;
-        this.cleaningSemaphore = cleaningSemaphore;
-        this.floor = floor;
+    public SequentialCleaner( Semaphore semaphore , CountDownLatch starter , Floor floor ){
+        this.semaphore = semaphore;
         this.starter = starter;
+        this.floor = floor;
     }
 
     @Override
     public void run(){
         try{
             starter.await();
-            cleaningSemaphore.release();
-            Arrays.stream( floor.getSpaces() ).forEachOrdered( new Consumer<>(){
-                int i = 0;
-
-                @Override
-                public void accept( Space space ){
-                    System.out.printf( "Cleaning space number %d with total area %f square meters\n" , ++i ,
-                                       space.getArea() );
-                }
-            } );
         }catch( InterruptedException e ){
             e.printStackTrace();
-        }finally{
-            repairingSemaphore.release();
+        }
+        try{
+            while( goingSpaceIndex < 10 ){
+                if( Thread.currentThread().isInterrupted() ){ return; }
+                semaphore.acquireClean();
+                System.out.printf( "Cleaning space number %2$d with total area %1$.2f square meters\n" ,
+                                   floor.getSpace( goingSpaceIndex++ ).getArea() , goingSpaceIndex );
+                semaphore.realiseClean();
+            }
+        }catch( InterruptedException e ){
+            e.printStackTrace();
         }
     }
 }

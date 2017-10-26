@@ -9,18 +9,18 @@ import java.util.function.Consumer;
 
 public class Repairer extends Thread{
 
-    private CountDownLatch start;
+    private CountDownLatch starter;
     private Floor          floor;
 
-    public Repairer( CountDownLatch start , Floor floor ){
-        this.start = start;
+    public Repairer( CountDownLatch starter , Floor floor ){
+        this.starter = starter;
         this.floor = floor;
     }
 
     @Override
     public void run(){
         try{
-            start.await();
+            starter.await();
         }catch( InterruptedException e ){
             e.printStackTrace();
         }
@@ -29,6 +29,7 @@ public class Repairer extends Thread{
 
             @Override
             public void accept( Space space ){
+                if( isInterrupted() ){ return; }
                 System.out.printf( "Repairing space number %d with total area %f square meters\n" , ++i ,
                                    space.getArea() );
             }

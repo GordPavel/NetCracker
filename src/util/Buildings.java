@@ -121,7 +121,7 @@ public final class Buildings implements BuildingFactory{
 
     private static BuildingFactory buildingFactory = new DwellingFactory();
 
-    public static void setBuildingFactory( BuildingFactory buildingFactory ){
+    public static void setFactory( BuildingFactory buildingFactory ){
         Buildings.buildingFactory = buildingFactory;
     }
 
