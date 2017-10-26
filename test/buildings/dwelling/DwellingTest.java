@@ -1,4 +1,4 @@
-package dwelling;
+package buildings.dwelling;
 
 import buildings.interfaces.Building;
 import buildings.interfaces.Floor;

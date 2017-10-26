@@ -17,7 +17,7 @@ public class OfficeBuilding implements Building{
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( officebuilding.OfficeFloor::new )
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( OfficeFloor::new )
                             .collect( () -> new TwoSideLinkedCycleList<>( Collections.emptyList() ) ,
                                       TwoSideLinkedCycleList::add , ( floors12 , floors2 ) -> {
                                         for( Floor floor : floors2 ){ floors12.add( floor ); }
@@ -107,13 +107,13 @@ public class OfficeBuilding implements Building{
 
     @Override
     public Space getBestSpace(){
-        return Arrays.stream( getSpaces() ).max( Comparator.comparingDouble( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).max( Space::compareTo )
                      .orElseThrow( () -> new IllegalStateException( "Dwelling is empty" ) );
     }
 
     @Override
     public Space[] getBestSpaces(){
-        return Arrays.stream( getSpaces() ).sorted( Comparator.comparingDouble( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).sorted( Space::compareTo )
                      .toArray( value -> new Space[ getSpacesCount() ] );
     }
 
@@ -150,5 +150,10 @@ public class OfficeBuilding implements Building{
         for( Floor floor : getFloors() ){ stringBuilder.append( floor ).append( ", " ); }
         stringBuilder.append( ")" );
         return stringBuilder.toString();
+    }
+
+    @Override
+    public Iterator<Floor> iterator(){
+        return floors.iterator();
     }
 }

@@ -1,4 +1,4 @@
-package officebuilding;
+package buildings.officebuilding;
 
 import buildings.interfaces.Building;
 import buildings.interfaces.Floor;

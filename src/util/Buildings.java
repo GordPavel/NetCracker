@@ -1,16 +1,19 @@
 package util;
 
-import buildings.dwelling.Dwelling;
 import buildings.dwelling.DwellingFloor;
 import buildings.dwelling.Flat;
 import buildings.interfaces.Building;
 import buildings.interfaces.Floor;
 import buildings.interfaces.Space;
+import util.factories.BuildingFactory;
+import util.factories.DwellingFactory;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
 
-public final class Buildings{
+public final class Buildings implements BuildingFactory{
 
     public static void outputBuilding( Building building , OutputStream outputStream ) throws IOException{
         DataOutputStream dataOutputStream = new DataOutputStream( new BufferedOutputStream( outputStream ) );
@@ -40,7 +43,7 @@ public final class Buildings{
             }
             floors[ i ] = new DwellingFloor( spaces );
         }
-        return new Dwelling( floors );
+        return buildingFactory.createBuilding( floors );
     }
 
     public static void writeBuilding( Building building , Writer writer ) throws IOException{
@@ -74,7 +77,7 @@ public final class Buildings{
             }
             floors[ i ] = new DwellingFloor( spaces );
         }
-        return new Dwelling( floors );
+        return buildingFactory.createBuilding( floors );
     }
 
     public static void writeBuildingFormat( Building building , Writer writer ){
@@ -105,6 +108,50 @@ public final class Buildings{
             }
             floors[ i ] = new DwellingFloor( spaces );
         }
-        return new Dwelling( floors );
+        return buildingFactory.createBuilding( floors );
+    }
+
+    public static <T extends Comparable<T>> T[] sort( T[] objects ){
+        return ( T[] ) Arrays.stream( objects ).sorted().toArray();
+    }
+
+    public static <T> T[] sort( T[] objects , Comparator<T> comparator ){
+        return ( T[] ) Arrays.stream( objects ).sorted( comparator ).toArray();
+    }
+
+    private static BuildingFactory buildingFactory = new DwellingFactory();
+
+    public static void setBuildingFactory( BuildingFactory buildingFactory ){
+        Buildings.buildingFactory = buildingFactory;
+    }
+
+    @Override
+    public Space createSpace( Double area ){
+        return buildingFactory.createSpace( area );
+    }
+
+    @Override
+    public Space createSpace( Integer roomsCount , Double area ){
+        return buildingFactory.createSpace( roomsCount , area );
+    }
+
+    @Override
+    public Floor createFloor( Integer spacesCount ){
+        return buildingFactory.createFloor( spacesCount );
+    }
+
+    @Override
+    public Floor createFloor( Space[] spaces ){
+        return buildingFactory.createFloor( spaces );
+    }
+
+    @Override
+    public Building createBuilding( int floorsCount , int[] spacesCounts ){
+        return buildingFactory.createBuilding( floorsCount , spacesCounts );
+    }
+
+    @Override
+    public Building createBuilding( Floor[] floors ){
+        return buildingFactory.createBuilding( floors );
     }
 }

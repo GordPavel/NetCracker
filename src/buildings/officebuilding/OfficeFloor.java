@@ -4,10 +4,7 @@ import buildings.interfaces.Floor;
 import buildings.interfaces.Space;
 import collections.OneSideLinkedCycleList;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class OfficeFloor implements Floor{
     private OneSideLinkedCycleList<Space> offices;
@@ -103,5 +100,10 @@ public class OfficeFloor implements Floor{
         }
         stringBuilder.append( ")" );
         return stringBuilder.toString();
+    }
+
+    @Override
+    public Iterator<Space> iterator(){
+        return offices.iterator();
     }
 }

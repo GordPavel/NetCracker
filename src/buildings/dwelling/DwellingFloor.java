@@ -6,6 +6,7 @@ import exceptions.FloorIndexOutOfBoundsException;
 import exceptions.SpaceIndexOutOfBoundsException;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 public class DwellingFloor implements Floor{
@@ -121,5 +122,25 @@ public class DwellingFloor implements Floor{
             floor.flats = flats.clone();
         }catch( CloneNotSupportedException ignored ){}
         return floor;
+    }
+
+    @Override
+    public Iterator<Space> iterator(){
+        return new Iterator<>(){
+
+            int goingIndex = 0;
+
+            @Override
+            public boolean hasNext(){
+                return goingIndex < flats.length;
+            }
+
+            @Override
+            public Space next(){
+                Space space = flats[ goingIndex ];
+                goingIndex++;
+                return space;
+            }
+        };
     }
 }

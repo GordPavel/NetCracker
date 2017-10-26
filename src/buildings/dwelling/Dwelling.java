@@ -8,17 +8,18 @@ import exceptions.SpaceIndexOutOfBoundsException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class Dwelling implements Building{
-    private Floor[] floors;
+
+    protected Floor[] floors;
 
     public Dwelling( int floors , int... spacesCountOnEachFloor ){
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( dwelling.DwellingFloor::new )
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( DwellingFloor::new )
                             .toArray( value -> new Floor[ floors ] );
     }
 
@@ -111,13 +112,13 @@ public class Dwelling implements Building{
 
     @Override
     public Space getBestSpace(){
-        return Arrays.stream( getSpaces() ).max( Comparator.comparingDouble( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).max( Space::compareTo )
                      .orElseThrow( () -> new IllegalStateException( "Dwelling is empty" ) );
     }
 
     @Override
     public Space[] getBestSpaces(){
-        return Arrays.stream( getSpaces() ).sorted( Comparator.comparingDouble( Space::getArea ) )
+        return Arrays.stream( getSpaces() ).sorted( Space::compareTo )
                      .toArray( value -> new Space[ getSpacesCount() ] );
     }
 
@@ -145,6 +146,26 @@ public class Dwelling implements Building{
         Dwelling clone = ( Dwelling ) super.clone();
         clone.floors = Arrays.copyOf( this.floors , floors.length );
         return clone;
+    }
+
+    @Override
+    public Iterator<Floor> iterator(){
+        return new Iterator<>(){
+
+            int goingIndex = 0;
+
+            @Override
+            public boolean hasNext(){
+                return goingIndex < floors.length;
+            }
+
+            @Override
+            public Floor next(){
+                Floor floor = floors[ goingIndex ];
+                goingIndex++;
+                return floor;
+            }
+        };
     }
 
     @Override
