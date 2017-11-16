@@ -82,7 +82,7 @@ public class Office implements Space{
 
     @Override
     public String toString(){
-        return String.format( "Office (%d , %f)" , getRoomsCount() , getArea() );
+        return String.format( "Office (%d , %.2f)" , getRoomsCount() , getArea() );
     }
 
     @Override

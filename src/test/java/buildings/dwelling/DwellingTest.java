@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class DwellingTest{
 
     private Building    dwelling;
@@ -27,7 +26,7 @@ class DwellingTest{
 
     @BeforeEach
     void setUp(){
-        floorsCount = random.nextInt( 10 ) + 5;
+        floorsCount = 5;
         floors = Stream.generate( () -> new DwellingFloor( getFlats() ) ).limit( floorsCount )
                        .collect( Collectors.toList() );
         spacesCount = floors.stream().mapToInt( Floor::getSpacesCount ).sum();
@@ -37,7 +36,7 @@ class DwellingTest{
     }
 
     private Space[] getFlats(){
-        int flatsCount = random.nextInt( 10 ) + 5;
+        int flatsCount = 5;
         return Stream.generate( () -> new Flat( random.nextDouble() * 50 + 25 , random.nextInt( 5 ) + 3 ) )
                      .limit( flatsCount ).toArray( value -> new Space[ flatsCount ] );
     }
@@ -155,4 +154,8 @@ class DwellingTest{
                 dwelling.getBestSpaces() );
     }
 
+    @Test
+    void toString1(){
+        System.out.println( dwelling.toString() );
+    }
 }

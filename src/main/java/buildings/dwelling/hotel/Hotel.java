@@ -46,7 +46,7 @@ public class Hotel extends Dwelling{
     @Override
     public Space getBestSpace(){
         return getHotelSpaces().max( Comparator.comparingDouble(
-                hotelSpace -> hotelSpace.space.getArea() * getCoeff( hotelSpace.stars ) ) )
+                hotelSpace -> hotelSpace.space.getArea() * getCoef( hotelSpace.stars ) ) )
                                .orElseThrow( IllegalStateException::new ).space;
     }
 
@@ -63,7 +63,7 @@ public class Hotel extends Dwelling{
     @Override
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append( "Dwelling (" ).append( getStars() ).append( ", " ).append( getFloorsCount() )
+        stringBuilder.append( "Hotel (" ).append( getStars() ).append( ", " ).append( getFloorsCount() )
                      .append( ", " );
         for( Floor floor : getFloors() ){
             stringBuilder.append( floor ).append( ", " );
@@ -72,7 +72,7 @@ public class Hotel extends Dwelling{
         return stringBuilder.toString();
     }
 
-    private static Double getCoeff( Integer stars ){
+    private static Double getCoef( Integer stars ){
         switch( stars ){
             case 1:
                 return 0.25;

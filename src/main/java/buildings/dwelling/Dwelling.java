@@ -171,7 +171,6 @@ public class Dwelling implements Building{
     @Override
     public Iterator<Floor> iterator(){
         return new Iterator<>(){
-
             int goingIndex = 0;
 
             @Override

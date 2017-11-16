@@ -82,7 +82,7 @@ public class Flat implements Space{
 
     @Override
     public String toString(){
-        return String.format( "Flat (%d , %f)" , getRoomsCount() , getArea() );
+        return String.format( "Flat (%d , %.2f)" , getRoomsCount() , getArea() );
     }
 
     @Override

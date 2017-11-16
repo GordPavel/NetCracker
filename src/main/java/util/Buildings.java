@@ -78,19 +78,20 @@ public final class Buildings{
 
     public static void writeBuildingFormat( Building building , Writer writer ){
         PrintWriter printWriter = new PrintWriter( writer );
-        printWriter.printf( "%d \n" , building.getFloorsCount() );
+        printWriter.printf( "%d " , building.getFloorsCount() );
         for( Floor floor : building.getFloors() ){
-            printWriter.printf( "%d \n" , floor.getSpacesCount() );
+            printWriter.printf( "%d " , floor.getSpacesCount() );
             for( Space space : floor.getSpaces() ){
                 printWriter.printf( "%d " , space.getRoomsCount() );
-                printWriter.printf( "%f " , space.getArea() );
+                printWriter.printf( "%.3f " , space.getArea() );
             }
-            printWriter.print( "\n" );
+            printWriter.print( " " );
         }
+        printWriter.println();
         printWriter.flush();
     }
 
-    public static Building readBuilding( Scanner scanner ) throws IOException{
+    public static Building readBuilding( Scanner scanner ){
         Floor[] floors = new Floor[ scanner.nextInt() ];
         Space[] spaces;
         int     rooms;
