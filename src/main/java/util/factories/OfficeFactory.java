@@ -8,7 +8,7 @@ import buildings.officebuilding.OfficeBuilding;
 import buildings.officebuilding.OfficeFloor;
 import util.BuildingFactory;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class OfficeFactory implements BuildingFactory{
     @Override
@@ -17,7 +17,7 @@ public class OfficeFactory implements BuildingFactory{
     }
 
     @Override
-    public Space createSpace( Integer roomsCount , Double area ){
+    public Space createSpace( Double area , Integer roomsCount ){
         return new Office( area , roomsCount );
     }
 
@@ -27,17 +27,17 @@ public class OfficeFactory implements BuildingFactory{
     }
 
     @Override
-    public Floor createFloor( Space[] spaces ){
-        return new OfficeFloor( Arrays.asList( spaces ) );
+    public Floor createFloor( List<Space> spaces ){
+        return new OfficeFloor( spaces );
     }
 
     @Override
-    public Building createBuilding( int floorsCount , int[] spacesCounts ){
+    public Building createBuilding( Integer floorsCount , Integer[] spacesCounts ){
         return new OfficeBuilding( floorsCount , spacesCounts );
     }
 
     @Override
-    public Building createBuilding( Floor[] floors ){
-        return new OfficeBuilding( Arrays.asList( floors ) );
+    public Building createBuilding( List<Floor> floors ){
+        return new OfficeBuilding( floors );
     }
 }

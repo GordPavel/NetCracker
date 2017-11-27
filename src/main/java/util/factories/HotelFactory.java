@@ -8,6 +8,8 @@ import buildings.interfaces.Floor;
 import buildings.interfaces.Space;
 import util.BuildingFactory;
 
+import java.util.List;
+
 public class HotelFactory implements BuildingFactory{
 
     @Override
@@ -16,7 +18,7 @@ public class HotelFactory implements BuildingFactory{
     }
 
     @Override
-    public Space createSpace( Integer roomsCount , Double area ){
+    public Space createSpace( Double area , Integer roomsCount ){
         return new Flat( area , roomsCount );
     }
 
@@ -26,17 +28,17 @@ public class HotelFactory implements BuildingFactory{
     }
 
     @Override
-    public Floor createFloor( Space[] spaces ){
+    public Floor createFloor( List<Space> spaces ){
         return new HotelFloor( spaces );
     }
 
     @Override
-    public Building createBuilding( int floorsCount , int[] spacesCounts ){
+    public Building createBuilding( Integer floorsCount , Integer[] spacesCounts ){
         return new Hotel( floorsCount , spacesCounts );
     }
 
     @Override
-    public Building createBuilding( Floor[] floors ){
+    public Building createBuilding( List<Floor> floors ){
         return new Hotel( floors );
     }
 }

@@ -32,13 +32,13 @@ class DwellingTest{
         spacesCount = floors.stream().mapToInt( Floor::getSpacesCount ).sum();
         spacesArea = floors.stream().mapToDouble( Floor::getSpacesArea ).sum();
         spacesRooms = floors.stream().mapToInt( Floor::getSpacesRooms ).sum();
-        dwelling = new Dwelling( floors.toArray( new Floor[ floorsCount ] ) );
+        dwelling = new Dwelling( floors );
     }
 
-    private Space[] getFlats(){
+    private List<Space> getFlats(){
         int flatsCount = 5;
         return Stream.generate( () -> new Flat( random.nextDouble() * 50 + 25 , random.nextInt( 5 ) + 3 ) )
-                     .limit( flatsCount ).toArray( value -> new Space[ flatsCount ] );
+                     .limit( flatsCount ).collect( Collectors.toList() );
     }
 
     @Test

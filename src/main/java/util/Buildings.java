@@ -1,14 +1,17 @@
 package util;
 
-import buildings.dwelling.Flat;
 import buildings.interfaces.Building;
 import buildings.interfaces.Floor;
 import buildings.interfaces.Space;
 import util.factories.DwellingFactory;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
+@SuppressWarnings( "JavaReflectionMemberAccess" )
 public final class Buildings{
 
     public static void outputBuilding( Building building , OutputStream outputStream ) throws IOException{
@@ -17,8 +20,8 @@ public final class Buildings{
         for( Floor floor : building.getFloors() ){
             dataOutputStream.writeInt( floor.getSpacesCount() );
             for( Space space : floor.getSpaces() ){
-                dataOutputStream.writeInt( space.getRoomsCount() );
                 dataOutputStream.writeDouble( space.getArea() );
+                dataOutputStream.writeInt( space.getRoomsCount() );
             }
         }
         dataOutputStream.flush();
@@ -26,20 +29,44 @@ public final class Buildings{
 
     public static Building inputBuilding( InputStream inputStream ) throws IOException{
         DataInputStream dataInputStream = new DataInputStream( inputStream );
-        Floor[]         floors          = new Floor[ dataInputStream.readInt() ];
-        Space[]         spaces;
-        int             rooms;
-        double          area;
-        for( int i = 0 ; i < floors.length ; i++ ){
-            spaces = new Flat[ dataInputStream.readInt() ];
-            for( int j = 0 ; j < spaces.length ; j++ ){
-                rooms = dataInputStream.readInt();
-                area = dataInputStream.readDouble();
-                spaces[ j ] = buildingFactory.createSpace( rooms , area );
+        List<Floor>     floors          = new ArrayList<>( dataInputStream.readInt() );
+        List<Space>     spaces;
+        for( int i = 0 ; i < floors.size() ; i++ ){
+            spaces = new ArrayList<>( dataInputStream.readInt() );
+            for( int j = 0 ; j < spaces.size() ; j++ ){
+                double area       = dataInputStream.readDouble();
+                int    roomsCount = dataInputStream.readInt();
+                spaceCollector( spaces , area , roomsCount );
             }
-            floors[ i ] = buildingFactory.createFloor( spaces );
+            floorsCollector( floors , spaces );
         }
-        return buildingFactory.createBuilding( floors );
+        return createBuilding( floors );
+    }
+
+    private static void spaceCollector( List<Space> spaces , double area , int roomsCount ){
+        spaces.add( buildingFactory.createSpace( area , roomsCount ) );
+    }
+
+    private static void floorsCollector( List<Floor> floors , List<Space> spaces ){
+        floors.add( buildingFactory.createFloor( spaces ) );
+    }
+
+    public static Building inputBuilding( InputStream inputStream , Class<? extends Building> buildingClass ,
+                                          Class<? extends Floor> floorClass , Class<? extends Space> spaceClass ) throws
+                                                                                                                  IOException{
+        DataInputStream dataInputStream = new DataInputStream( inputStream );
+        List<Floor>     floors          = new ArrayList<>( dataInputStream.readInt() );
+        List<Space>     spaces;
+        for( int i = 0 ; i < floors.size() ; i++ ){
+            spaces = new ArrayList<>( dataInputStream.readInt() );
+            for( int j = 0 ; j < spaces.size() ; j++ ){
+                double area       = dataInputStream.readDouble();
+                int    roomsCount = dataInputStream.readInt();
+                spaces.add( Buildings.createSpace( spaceClass , area , roomsCount ) );
+            }
+            floors.add( Buildings.createFloor( floorClass , spaces ) );
+        }
+        return Buildings.createBuilding( buildingClass , floors );
     }
 
     public static void writeBuilding( Building building , Writer writer ) throws IOException{
@@ -47,8 +74,8 @@ public final class Buildings{
         for( Floor floor : building.getFloors() ){
             writer.write( floor.getSpacesCount().toString() );
             for( Space space : floor.getSpaces() ){
-                writer.write( space.getRoomsCount().toString() );
                 writer.write( space.getArea().toString() );
+                writer.write( space.getRoomsCount().toString() );
             }
         }
         writer.flush();
@@ -57,23 +84,47 @@ public final class Buildings{
     public static Building readBuilding( Reader reader ) throws IOException{
         StreamTokenizer tokenizer = new StreamTokenizer( reader );
         tokenizer.nextToken();
-        Floor[] floors = new Floor[ ( int ) tokenizer.nval ];
-        Space[] spaces;
-        int     rooms;
-        double  area;
-        for( int i = 0 ; i < floors.length ; i++ ){
+        List<Floor> floors = new ArrayList<>( ( int ) tokenizer.nval );
+        List<Space> spaces;
+        int         rooms;
+        double      area;
+        for( int i = 0 ; i < floors.size() ; i++ ){
             tokenizer.nextToken();
-            spaces = new Space[ ( int ) tokenizer.nval ];
-            for( int j = 0 ; j < spaces.length ; j++ ){
-                tokenizer.nextToken();
-                rooms = ( int ) tokenizer.nval;
+            spaces = new ArrayList<>( ( int ) tokenizer.nval );
+            for( int j = 0 ; j < spaces.size() ; j++ ){
                 tokenizer.nextToken();
                 area = tokenizer.nval;
-                spaces[ j ] = buildingFactory.createSpace( rooms , area );
+                tokenizer.nextToken();
+                rooms = ( int ) tokenizer.nval;
+                spaceCollector( spaces , area , rooms );
             }
-            floors[ i ] = buildingFactory.createFloor( spaces );
+            floorsCollector( floors , spaces );
         }
-        return buildingFactory.createBuilding( floors );
+        return createBuilding( floors );
+    }
+
+    public static Building readBuilding( Reader reader , Class<? extends Building> buildingClass ,
+                                         Class<? extends Floor> floorClass , Class<? extends Space> spaceClass ) throws
+                                                                                                                 IOException{
+        StreamTokenizer tokenizer = new StreamTokenizer( reader );
+        tokenizer.nextToken();
+        List<Floor> floors = new ArrayList<>( ( int ) tokenizer.nval );
+        List<Space> spaces;
+        int         rooms;
+        double      area;
+        for( int i = 0 ; i < floors.size() ; i++ ){
+            tokenizer.nextToken();
+            spaces = new ArrayList<>( ( int ) tokenizer.nval );
+            for( int j = 0 ; j < spaces.size() ; j++ ){
+                tokenizer.nextToken();
+                area = tokenizer.nval;
+                tokenizer.nextToken();
+                rooms = ( int ) tokenizer.nval;
+                spaces.add( Buildings.createSpace( spaceClass , area , rooms ) );
+            }
+            floors.add( Buildings.createFloor( floorClass , spaces ) );
+        }
+        return Buildings.createBuilding( buildingClass , floors );
     }
 
     public static void writeBuildingFormat( Building building , Writer writer ){
@@ -82,8 +133,8 @@ public final class Buildings{
         for( Floor floor : building.getFloors() ){
             printWriter.printf( "%d " , floor.getSpacesCount() );
             for( Space space : floor.getSpaces() ){
-                printWriter.printf( "%d " , space.getRoomsCount() );
                 printWriter.printf( "%.3f " , space.getArea() );
+                printWriter.printf( "%d " , space.getRoomsCount() );
             }
             printWriter.print( " " );
         }
@@ -92,20 +143,32 @@ public final class Buildings{
     }
 
     public static Building readBuilding( Scanner scanner ){
-        Floor[] floors = new Floor[ scanner.nextInt() ];
-        Space[] spaces;
-        int     rooms;
-        double  area;
-        for( int i = 0 ; i < floors.length ; i++ ){
-            spaces = new Space[ scanner.nextInt() ];
-            for( int j = 0 ; j < spaces.length ; j++ ){
-                rooms = scanner.nextInt();
-                area = scanner.nextDouble();
-                spaces[ j ] = buildingFactory.createSpace( rooms , area );
+        List<Floor> floors = new ArrayList<>( scanner.nextInt() );
+        List<Space> spaces;
+        for( int i = 0 ; i < floors.size() ; i++ ){
+            spaces = new ArrayList<>( scanner.nextInt() );
+            for( int j = 0 ; j < spaces.size() ; j++ ){
+                double area       = scanner.nextDouble();
+                int    roomsCount = scanner.nextInt();
+                spaceCollector( spaces , area , roomsCount );
             }
-            floors[ i ] = buildingFactory.createFloor( spaces );
+            floorsCollector( floors , spaces );
         }
-        return buildingFactory.createBuilding( floors );
+        return createBuilding( floors );
+    }
+
+    public static Building readBuilding( Scanner scanner , Class<? extends Building> buildingClass ,
+                                         Class<? extends Floor> floorClass , Class<? extends Space> spaceClass ){
+        List<Floor> floors = new ArrayList<>( scanner.nextInt() );
+        List<Space> spaces;
+        for( int i = 0 ; i < floors.size() ; i++ ){
+            spaces = new ArrayList<>( scanner.nextInt() );
+            for( int j = 0 ; j < spaces.size() ; j++ ){
+                spaces.add( Buildings.createSpace( spaceClass , scanner.nextDouble() , scanner.nextInt() ) );
+            }
+            floors.add( Buildings.createFloor( floorClass , spaces ) );
+        }
+        return Buildings.createBuilding( buildingClass , floors );
     }
 
     private static BuildingFactory buildingFactory = new DwellingFactory();
@@ -119,22 +182,74 @@ public final class Buildings{
     }
 
     public static Space createSpace( Integer roomsCount , Double area ){
-        return buildingFactory.createSpace( roomsCount , area );
+        return buildingFactory.createSpace( area , roomsCount );
+    }
+
+    public static Space createSpace( Class<? extends Space> spaceClass , Double area , Integer roomsCount ){
+        try{
+            return spaceClass.getConstructor( area.getClass() , roomsCount.getClass() )
+                             .newInstance( area , roomsCount );
+        }catch( InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ){
+            throw new IllegalArgumentException( e );
+        }
+    }
+
+    public static Space createSpace( Class<? extends Space> spaceClass , Double area ){
+        try{
+            return spaceClass.getConstructor( area.getClass() ).newInstance( area );
+        }catch( InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ){
+            throw new IllegalArgumentException( e );
+        }
     }
 
     public static Floor createFloor( Integer spacesCount ){
         return buildingFactory.createFloor( spacesCount );
     }
 
-    public static Floor createFloor( Space[] spaces ){
+    public static Floor createFloor( Class<? extends Floor> floorClass , Integer spacesCount ){
+        try{
+            return floorClass.getConstructor( spacesCount.getClass() ).newInstance( spacesCount );
+        }catch( InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ){
+            throw new IllegalArgumentException( e );
+        }
+    }
+
+    public static Floor createFloor( List<Space> spaces ){
         return buildingFactory.createFloor( spaces );
     }
 
-    public static Building createBuilding( int floorsCount , int[] spacesCounts ){
+    public static Floor createFloor( Class<? extends Floor> floorClass , List<Space> spaces ){
+        try{
+            return floorClass.getConstructor( spaces.getClass() ).newInstance( spaces );
+        }catch( InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ){
+            throw new IllegalArgumentException( e );
+        }
+    }
+
+    public static Building createBuilding( Integer floorsCount , Integer[] spacesCounts ){
         return buildingFactory.createBuilding( floorsCount , spacesCounts );
     }
 
-    public static Building createBuilding( Floor[] floors ){
+    public static Building createBuilding( Class<? extends Building> buildingCLass , Integer floorsCount ,
+                                           Integer[] spacesCounts ){
+        try{
+            return buildingCLass.getConstructor( floorsCount.getClass() , spacesCounts.getClass() )
+                                .newInstance( floorsCount , spacesCounts );
+        }catch( InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ){
+            throw new IllegalArgumentException( e );
+        }
+    }
+
+    public static Building createBuilding( List<Floor> floors ){
         return buildingFactory.createBuilding( floors );
     }
+
+    public static Building createBuilding( Class<? extends Building> buildingCLass , List<Floor> floors ){
+        try{
+            return buildingCLass.getConstructor( floors.getClass() ).newInstance( floors );
+        }catch( InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e ){
+            throw new IllegalArgumentException( e );
+        }
+    }
+
 }

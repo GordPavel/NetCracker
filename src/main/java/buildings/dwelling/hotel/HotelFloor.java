@@ -1,20 +1,20 @@
 package buildings.dwelling.hotel;
 
 import buildings.dwelling.DwellingFloor;
-import buildings.dwelling.Flat;
 import buildings.interfaces.Space;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public class HotelFloor extends DwellingFloor{
     private Integer starsCount;
     private final static Integer DEFAULT_STARS = 1;
 
     public HotelFloor( Integer flatsCount ){
-        this( Stream.generate( Flat::new ).limit( flatsCount ).toArray( value -> new Space[ flatsCount ] ) );
+        super( flatsCount );
+        this.starsCount = DEFAULT_STARS;
     }
 
-    public HotelFloor( Space[] flats ){
+    public HotelFloor( List<Space> flats ){
         super( flats );
         this.starsCount = DEFAULT_STARS;
     }
@@ -35,6 +35,7 @@ public class HotelFloor extends DwellingFloor{
         for( Space space : getSpaces() ){
             stringBuilder.append( space ).append( ", " );
         }
+        stringBuilder.deleteCharAt( stringBuilder.length() - 2 );
         stringBuilder.append( ")" );
         return stringBuilder.toString();
     }

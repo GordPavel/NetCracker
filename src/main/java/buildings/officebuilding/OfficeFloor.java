@@ -9,7 +9,7 @@ import java.util.*;
 public class OfficeFloor implements Floor{
     private OneSideLinkedCycleList<Space> offices;
 
-    public OfficeFloor( int officesCount ){
+    public OfficeFloor( Integer officesCount ){
         this.offices = new OneSideLinkedCycleList<>( Collections.nCopies( officesCount , new Office() ) );
     }
 
@@ -109,6 +109,7 @@ public class OfficeFloor implements Floor{
         for( Space space : getSpaces() ){
             stringBuilder.append( space ).append( ", " );
         }
+        stringBuilder.deleteCharAt( stringBuilder.length() - 2 );
         stringBuilder.append( ")" );
         return stringBuilder.toString();
     }

@@ -13,17 +13,14 @@ public class OfficeBuilding implements Building{
 
     private TwoSideLinkedCycleList<Floor> floors;
 
-    public OfficeBuilding( int floors , int... spacesCountOnEachFloor ){
+    public OfficeBuilding( Integer floors , Integer... spacesCountOnEachFloor ){
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( OfficeFloor::new )
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).map( OfficeFloor::new )
                             .collect( () -> new TwoSideLinkedCycleList<>( Collections.emptyList() ) ,
-                                      TwoSideLinkedCycleList::add , ( floors12 , floors2 ) -> {
-                                        for( Floor floor : floors2 ){
-                                            floors12.add( floor );
-                                        }
-                                    } );
+                                      TwoSideLinkedCycleList::add ,
+                                      ( floors1 , floors2 ) -> floors2.forEach( floors1::add ) );
     }
 
     public OfficeBuilding( List<Floor> floors ){

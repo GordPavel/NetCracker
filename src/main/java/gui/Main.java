@@ -10,9 +10,8 @@ import util.factories.OfficeFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.List;
 
@@ -26,57 +25,6 @@ public class Main extends JFrame{
     private JLabel      floorInfo;
     private JLabel      spaceInfo;
     private Container   allContent;
-
-    private void showBuilding( Building building ){
-        buildingPanel.removeAll();
-        List<Floor> floors = new ArrayList<>( Arrays.asList( building.getFloors() ) );
-        Collections.reverse( floors );
-        int floorsIndex = floors.size(), spacesIndex;
-        buildingPanel.setBounds( 0 , 0 , Arrays.stream( building.getFloors() ).mapToInt( Floor::getSpacesCount ).max()
-                                               .orElse( scrollPane.getWidth() ) ,
-                                 max( building.getFloorsCount() * 20 , scrollPane.getHeight() ) );
-        for( Floor floor : floors ){
-            JPanel floorPanel = new JPanel();
-            spacesIndex = 0;
-            floorPanel.setLayout( new BoxLayout( floorPanel , BoxLayout.X_AXIS ) );
-            floorPanel.setBounds( 0 , 0 , buildingPanel.getWidth() , 20 );
-            floorPanel.setBorder( BorderFactory.createTitledBorder( String.valueOf( floorsIndex-- ) ) );
-            for( Space space : floor ){
-                JButton button = new JButton( String.valueOf( ++spacesIndex ) );
-                int     i      = floorsIndex, j = spacesIndex;
-                button.addActionListener( event -> {
-                    showFloor( i , floor );
-                    showSpace( j , space );
-                } );
-                floorPanel.add( button , spacesIndex - 1 );
-            }
-            floorPanel.setAlignmentX( LEFT_ALIGNMENT );
-            buildingPanel.add( floorPanel );
-        }
-        buildingPanel.updateUI();
-
-        buildingInfo.setText( String.format( "<html>Type : %s<br>Floors count: %d<br>All area : %.2f</html>" ,
-                                             building instanceof Dwelling ? "Dwelling" : "Office building" ,
-                                             building.getFloorsCount() , building.getSpacesArea() ) );
-    }
-
-    private void showFloor( int index , Floor floor ){
-        floorInfo.setText( String.format( "<html>Index : %d<br>Spaces count : %d<br>All area : %.2f</html>" , index ,
-                                          floor.getSpacesCount() , floor.getSpacesArea() ) );
-    }
-
-    private void showSpace( int index , Space space ){
-        spaceInfo.setText( String.format( "<html>Index : %d<br>Rooms count : %d<br>Area : %.2f</html>" , index ,
-                                          space.getRoomsCount() , space.getArea() ) );
-    }
-
-    private void clearPanes(){
-        buildingPanel.removeAll();
-        buildingPanel.removeAll();
-        buildingInfo.removeAll();
-        floorInfo.removeAll();
-        spaceInfo.removeAll();
-    }
 
     private Main() throws HeadlessException{
         super( "Buildings" );
@@ -94,28 +42,6 @@ public class Main extends JFrame{
         buildingInfo = initBuildingInfo();
         floorInfo = initFloorInfo();
         spaceInfo = initSpaceInfo();
-
-        this.addComponentListener( new ComponentListener(){
-            @Override
-            public void componentResized( ComponentEvent e ){
-                buildingPanel.setBounds( 0 , 0 , max( buildingPanel.getWidth() , scrollPane.getWidth() ) ,
-                                         max( buildingPanel.getHeight() , scrollPane.getHeight() ) );
-            }
-
-            @Override
-            public void componentMoved( ComponentEvent e ){
-            }
-
-            @Override
-            public void componentShown( ComponentEvent e ){
-
-            }
-
-            @Override
-            public void componentHidden( ComponentEvent e ){
-
-            }
-        } );
 
         setVisible( true );
     }
@@ -137,6 +63,7 @@ public class Main extends JFrame{
 
         open.add( openDwelling );
         open.add( openOffice );
+        menuBar.add( open );
 
         JMenu       lookAndFeel = new JMenu( "Look&Feel" );
         ButtonGroup group       = new ButtonGroup();
@@ -155,9 +82,12 @@ public class Main extends JFrame{
             group.add( radioButtonMenuItem );
             lookAndFeel.add( radioButtonMenuItem );
         } );
-
-        menuBar.add( open );
         menuBar.add( lookAndFeel );
+
+        JMenuItem clear = new JMenuItem( "Clear" );
+        clear.addActionListener( e -> clearPanes() );
+        menuBar.add( clear );
+
         return menuBar;
     }
 
@@ -204,12 +134,61 @@ public class Main extends JFrame{
         return space;
     }
 
+    private void showBuilding( Building building ){
+        List<Floor> floors = new ArrayList<>( Arrays.asList( building.getFloors() ) );
+        Collections.reverse( floors );
+        int floorsIndex = floors.size(), spacesIndex;
+        buildingPanel.setBounds( 0 , 0 , Arrays.stream( building.getFloors() ).mapToInt( Floor::getSpacesCount ).max()
+                                               .orElse( scrollPane.getWidth() ) ,
+                                 max( building.getFloorsCount() * 20 , scrollPane.getHeight() ) );
+        for( Floor floor : floors ){
+            JPanel floorPanel = new JPanel();
+            spacesIndex = 0;
+            floorPanel.setLayout( new BoxLayout( floorPanel , BoxLayout.X_AXIS ) );
+            floorPanel.setBounds( 0 , 0 , buildingPanel.getWidth() , 20 );
+            floorPanel.setBorder( BorderFactory.createTitledBorder( String.valueOf( floorsIndex-- ) ) );
+            for( Space space : floor ){
+                JButton button = new JButton( String.valueOf( ++spacesIndex ) );
+                int     i      = floorsIndex + 1, j = spacesIndex;
+                button.addActionListener( event -> {
+                    showFloor( i , floor );
+                    showSpace( j , space );
+                } );
+                floorPanel.add( button );
+            }
+            floorPanel.setAlignmentX( LEFT_ALIGNMENT );
+            buildingPanel.add( floorPanel );
+        }
+        buildingPanel.updateUI();
+
+        buildingInfo.setText( String.format( "<html>Type : %s<br>Floors count: %d<br>All area : %.2f</html>" ,
+                                             building instanceof Dwelling ? "Dwelling" : "Office building" ,
+                                             building.getFloorsCount() , building.getSpacesArea() ) );
+    }
+
+    private void showFloor( int index , Floor floor ){
+        floorInfo.setText( String.format( "<html>Index : %d<br>Spaces count : %d<br>All area : %.2f</html>" , index ,
+                                          floor.getSpacesCount() , floor.getSpacesArea() ) );
+    }
+
+    private void showSpace( int index , Space space ){
+        spaceInfo.setText( String.format( "<html>Index : %d<br>Rooms count : %d<br>Area : %.2f</html>" , index ,
+                                          space.getRoomsCount() , space.getArea() ) );
+    }
+
+    private int showError( Container parent , Exception exception ){
+        return JOptionPane.showConfirmDialog( parent , exception.getMessage() , "Error" , JOptionPane.OK_CANCEL_OPTION ,
+                                              JOptionPane.ERROR_MESSAGE );
+    }
+
     private Optional<Building> openFileChooser(){
         JFileChooser fileChooser = new JFileChooser( "/Users/pavelgordeev/Desktop/buildings" );
         boolean      isDialogFinished;
         do{
             if( fileChooser.showDialog( this , "Open" ) == JFileChooser.APPROVE_OPTION ){
                 try( Scanner scanner = new Scanner( fileChooser.getSelectedFile() ) ){
+                    clearPanes();
+                    this.setTitle( fileChooser.getSelectedFile().getName() );
                     return Optional.of( Buildings.readBuilding( scanner ) );
                 }catch( FileNotFoundException e ){
                     isDialogFinished = showError( fileChooser , e ) == JOptionPane.OK_OPTION;
@@ -221,13 +200,29 @@ public class Main extends JFrame{
         return Optional.empty();
     }
 
-    private int showError( Container parent , Exception exception ){
-        return JOptionPane.showConfirmDialog( parent , exception.getMessage() , "Error" , JOptionPane.OK_CANCEL_OPTION ,
-                                              JOptionPane.ERROR_MESSAGE );
+    private void clearPanes(){
+        this.setTitle( "Buildings" );
+        buildingPanel.removeAll();
+        buildingInfo.setText( "" );
+        floorInfo.setText( "" );
+        spaceInfo.setText( "" );
     }
 
     public static void main( String[] args ){
+//        generateBuilding( "Name" );
         new Main();
+    }
+
+    private static void generateBuilding( String name ){
+        Random random = new Random( System.currentTimeMillis() );
+        try( PrintWriter writer = new PrintWriter(
+                String.format( "/Users/pavelgordeev/Desktop/buildings/%s.txt" , name ) ) ){
+            Buildings.writeBuildingFormat(
+                    Buildings.createBuilding( 20 , random.ints( 20 ).boxed().toArray( i -> new Integer[ 20 ] ) ) ,
+                    writer );
+        }catch( FileNotFoundException e ){
+            e.printStackTrace();
+        }
     }
 
 }

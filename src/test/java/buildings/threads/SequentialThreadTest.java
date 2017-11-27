@@ -1,7 +1,6 @@
 package buildings.threads;
 
 import buildings.interfaces.Floor;
-import buildings.interfaces.Space;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import util.Buildings;
@@ -23,11 +22,8 @@ class SequentialThreadTest{
     void setUp(){
         Floor floor = Stream.generate( () -> Buildings.createSpace( random.nextDouble() * 100 ) ).limit( 12 )
                             .collect( () -> Buildings.createFloor( 0 ) ,
-                                      ( spaces , flat ) -> spaces.addSpace( 0 , flat ) , ( spaces , spaces2 ) -> {
-                                        for( Space space : spaces2 ){
-                                            spaces.addSpace( 0 , space );
-                                        }
-                                    } );
+                                      ( spaces , flat ) -> spaces.addSpace( 0 , flat ) , ( spaces , spaces2 ) -> spaces2
+                                            .forEach( space -> spaces.addSpace( 0 , space ) ) );
         Semaphore repairingSemaphore = new Semaphore( false );
         Semaphore cleaningSemaphore  = new Semaphore( true );
         repairer1 = new Thread(

@@ -25,4 +25,8 @@ public interface Space extends Serializable, Cloneable, Comparable<Space>{
     default int compareTo( Space o ){
         return Objects.compare( this , o , Comparator.comparingDouble( Space::getArea ) );
     }
+
+    default String toStringWithoutType(){
+        return String.format( "(%d , %.2f)" , getRoomsCount() , getArea() );
+    }
 }

@@ -7,17 +7,19 @@ import exceptions.SpaceIndexOutOfBoundsException;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DwellingFloor implements Floor{
     private Space[] flats;
 
-    public DwellingFloor( Integer flatsCount ){
-        this( Stream.generate( Flat::new ).limit( flatsCount ).toArray( value -> new Space[ flatsCount ] ) );
+    public DwellingFloor( Integer spacesCount ){
+        this( Stream.generate( Flat::new ).limit( spacesCount ).collect( Collectors.toList() ) );
     }
 
-    public DwellingFloor( Space[] flats ){
-        this.flats = flats;
+    public DwellingFloor( List<Space> flats ){
+        this.flats = flats.toArray( new Space[ flats.size() ] );
     }
 
     @Override
@@ -130,6 +132,7 @@ public class DwellingFloor implements Floor{
         for( Space space : getSpaces() ){
             stringBuilder.append( space ).append( ", " );
         }
+        stringBuilder.deleteCharAt( stringBuilder.length() - 2 );
         stringBuilder.append( ")" );
         return stringBuilder.toString();
     }
@@ -164,4 +167,6 @@ public class DwellingFloor implements Floor{
             }
         };
     }
+
+
 }

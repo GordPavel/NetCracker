@@ -6,15 +6,16 @@ import buildings.interfaces.Space;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Hotel extends Dwelling{
 
-    public Hotel( int floors , int... spacesCountOnEachFloor ){
+    public Hotel( Integer floors , Integer... spacesCountOnEachFloor ){
         super( floors , spacesCountOnEachFloor );
     }
 
-    public Hotel( Floor[] floors ){
+    public Hotel( List<Floor> floors ){
         super( floors );
     }
 
@@ -63,8 +64,7 @@ public class Hotel extends Dwelling{
     @Override
     public String toString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append( "Hotel (" ).append( getStars() ).append( ", " ).append( getFloorsCount() )
-                     .append( ", " );
+        stringBuilder.append( "Hotel (" ).append( getStars() ).append( ", " ).append( getFloorsCount() ).append( ", " );
         for( Floor floor : getFloors() ){
             stringBuilder.append( floor ).append( ", " );
         }

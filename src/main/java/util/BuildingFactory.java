@@ -4,17 +4,19 @@ import buildings.interfaces.Building;
 import buildings.interfaces.Floor;
 import buildings.interfaces.Space;
 
+import java.util.List;
+
 public interface BuildingFactory{
 
     Space createSpace( Double area );
 
-    Space createSpace( Integer roomsCount , Double area );
+    Space createSpace( Double area , Integer roomsCount );
 
     Floor createFloor( Integer spacesCount );
 
-    Floor createFloor( Space[] spaces );
+    Floor createFloor( List<Space> spaces );
 
-    Building createBuilding( int floorsCount , int[] spacesCounts );
+    Building createBuilding( Integer floorsCount , Integer[] spacesCounts );
 
-    Building createBuilding( Floor[] floors );
+    Building createBuilding( List<Floor> floors );
 }

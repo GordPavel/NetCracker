@@ -15,16 +15,16 @@ public class Dwelling implements Building{
 
     protected Floor[] floors;
 
-    public Dwelling( int floors , int... spacesCountOnEachFloor ){
+    public Dwelling( Integer floors , Integer... spacesCountOnEachFloor ){
         if( floors != spacesCountOnEachFloor.length ){
             throw new IllegalArgumentException( "Floors count not equals to array of spaces count length." );
         }
-        this.floors = Arrays.stream( spacesCountOnEachFloor ).mapToObj( DwellingFloor::new )
+        this.floors = Arrays.stream( spacesCountOnEachFloor ).map( DwellingFloor::new )
                             .toArray( value -> new Floor[ floors ] );
     }
 
-    public Dwelling( Floor[] floors ){
-        this.floors = floors;
+    public Dwelling( List<Floor> floors ){
+        this.floors = floors.toArray( new Floor[ floors.size() ] );
     }
 
 

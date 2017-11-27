@@ -8,14 +8,14 @@ import java.util.Objects;
 
 public class Flat implements Space{
 
-    private static final Double  DEFAULT_SPACE = 50.0;
+    private static final Double  DEFAULT_AREA  = 50.0;
     private static final Integer DEFAULT_ROOMS = 2;
 
     private Double  area;
     private Integer rooms;
 
     public Flat(){
-        this( DEFAULT_SPACE , DEFAULT_ROOMS );
+        this( DEFAULT_AREA , DEFAULT_ROOMS );
     }
 
     public Flat( Double area ){
@@ -82,7 +82,7 @@ public class Flat implements Space{
 
     @Override
     public String toString(){
-        return String.format( "Flat (%d , %.2f)" , getRoomsCount() , getArea() );
+        return "Flat " + this.toStringWithoutType();
     }
 
     @Override
